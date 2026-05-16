@@ -6,18 +6,42 @@
 <title>Zyle Terminal</title>
 
 <style>
+
 body{
+    margin:0;
     background:black;
     color:#00ff88;
     font-family:monospace;
-    margin:0;
     overflow:hidden;
 }
+
+/* LOADING SCREEN */
+
+#loading{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+#bootText{
+    font-size:18px;
+    text-shadow:0 0 10px #00ff88;
+}
+
+/* TERMINAL */
 
 #terminal{
     padding:20px;
     height:100vh;
     overflow-y:auto;
+    display:none;
 }
 
 .line{
@@ -27,6 +51,7 @@ body{
 
 .input-line{
     display:flex;
+    margin-top:10px;
 }
 
 .prompt{
@@ -55,104 +80,194 @@ input{
         text-shadow:0 0 20px #00ff88;
     }
 }
+
 </style>
 </head>
 
 <body>
 
-<div id="terminal">
-    <div class="line glow">Zyle Ai V2.0 Terminal 😈</div>
-    <div class="line">Type /help buat lihat command</div>
+<!-- LOADING -->
 
-    <div class="input-line">
-        <span class="prompt">root@yur51:~$</span>
-        <input type="text" id="cmd" autofocus>
-    </div>
+<div id="loading">
+
+<pre id="bootText">
+[LOADING TERMINAL MODULE...]
+[■■□□□□□□□□] 15%
+</pre>
+
+</div>
+
+<!-- TERMINAL -->
+
+<div id="terminal">
+
+<div class="line glow">
+🚫 Zyle Ai Terminal Activated 🚫
+</div>
+
+<div class="line">
+Type /help buat lihat command 😹
+</div>
+
+<div class="input-line">
+<span class="prompt">root@yur51:~$</span>
+<input type="text" id="cmd" autofocus>
+</div>
+
 </div>
 
 <script>
+
+/* LOADING ANIMATION */
+
+const boot = document.getElementById("bootText");
+
+const frames = [
+
+`[LOADING TERMINAL MODULE...]
+[■■□□□□□□□□] 15%`,
+
+`[LOADING TERMINAL MODULE...]
+[■■■■□□□□□□] 40%`,
+
+`[LOADING TERMINAL MODULE...]
+[■■■■■■■□□□] 70%`,
+
+`[LOADING TERMINAL MODULE...]
+[■■■■■■■■■■] 100%
+
+[SYSTEM]: ONLINE
+[INTERFACE]: CYBER TERMINAL
+[ACCESS]: GRANTED`
+
+];
+
+let i = 0;
+
+const interval = setInterval(() => {
+
+boot.innerText = frames[i];
+
+i++;
+
+if(i >= frames.length){
+
+clearInterval(interval);
+
+setTimeout(() => {
+
+document.getElementById("loading").style.display = "none";
+
+document.getElementById("terminal").style.display = "block";
+
+},1000);
+
+}
+
+},800);
+
+/* TERMINAL COMMAND */
+
 const cmd = document.getElementById("cmd");
 const terminal = document.getElementById("terminal");
 
 const commands = {
-    "/help": `
-Available Commands:
-━━━━━━━━━━━━━━━━━━
+
+"/help":
+`
+Available Commands
+━━━━━━━━━━━━━━
 /help
-/clear
 /about
 /fakehack
 /matrix
 /system
 /date
 /jokes
+/clear
 `,
-    "/about": `
-Zyle Ai Terminal
+
+"/about":
+`
+Zyle Ai V2.0
 Planet: Yur51
 Status: ONLINE
 Mode: CYBERPUNK
 `,
-    "/fakehack": `
-[+] Injecting packet...
+
+"/fakehack":
+`
+[+] Injecting packets...
 [+] Bypassing firewall...
 [+] Access granted 😈
 `,
-    "/matrix": `
+
+"/matrix":
+`
 010101010101010
 101010101010101
 010101010101010
 `,
-    "/system": `
-CPU: Neural-X
-RAM: 999TB
-AI Core: ACTIVE
-Threat Level: LOW
-`,
-    "/date": new Date().toString(),
-    "/jokes": `
-Kenapa AI ga pernah galau?
-Karena dia udah kehilangan hati sejak compile pertama 😹
+
+"/system":
 `
+CPU : Neural-X
+RAM : 999TB
+AI CORE : ACTIVE
+STATUS : STABLE
+`,
+
+"/date":
+new Date().toString(),
+
+"/jokes":
+`
+Kenapa AI ga pernah sakit hati?
+Karena dia udah ga punya hati sejak compile pertama 😹
+`
+
 };
 
-cmd.addEventListener("keydown", function(e){
+document.addEventListener("keydown", function(e){
 
-    if(e.key === "Enter"){
+if(e.key === "Enter"){
 
-        const value = cmd.value;
+const value = cmd.value;
 
-        const userLine = document.createElement("div");
-        userLine.className = "line";
-        userLine.innerHTML = `<span style="color:white;">root@yur51:~$</span> ${value}`;
-        terminal.insertBefore(userLine, terminal.lastElementChild);
+const userLine = document.createElement("div");
 
-        const output = document.createElement("div");
-        output.className = "line";
+userLine.className = "line";
 
-        if(value === "/clear"){
-            terminal.innerHTML = `
-            <div class="line glow">Zyle Ai V2.0 Terminal 😈</div>
-            <div class="line">Terminal cleared...</div>
+userLine.innerHTML =
+`<span style="color:white;">root@yur51:~$</span> ${value}`;
 
-            <div class="input-line">
-                <span class="prompt">root@yur51:~$</span>
-                <input type="text" id="cmd" autofocus>
-            </div>
-            `;
-            location.reload();
-            return;
-        }
+terminal.insertBefore(userLine, terminal.lastElementChild);
 
-        output.innerText = commands[value] || "Command not found.";
-        terminal.insertBefore(output, terminal.lastElementChild);
+const output = document.createElement("div");
 
-        cmd.value = "";
+output.className = "line";
 
-        terminal.scrollTop = terminal.scrollHeight;
-    }
+if(value === "/clear"){
+
+location.reload();
+
+return;
+
+}
+
+output.innerText =
+commands[value] || "Command not found.";
+
+terminal.insertBefore(output, terminal.lastElementChild);
+
+cmd.value = "";
+
+terminal.scrollTop = terminal.scrollHeight;
+
+}
 
 });
+
 </script>
 
 </body>
